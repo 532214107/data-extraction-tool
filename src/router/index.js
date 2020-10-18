@@ -1,22 +1,38 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+
+import layout from "@/layouts/index.vue"
 
 Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/',
-    name: 'Home',
-    component: Home
-  },
-  {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    path: "/",
+    component: layout,
+    redirect: '/index',
+    children: [
+      {
+        path: '/index',
+        name: 'index',
+        component: () =>
+            import ('@/views/index'),
+        meta: { title: '首页', keepAlive: false }
+      },
+      {
+        path: '/alreadyExisted',
+        name: 'index',
+        component: () =>
+            import ('@/views/alreadyExisted'),
+        meta: { title: '已有任务', keepAlive: false }
+      },
+      {
+        path: '/extractionShow',
+        name: 'index',
+        component: () =>
+            import ('@/views/extractionShow'),
+        meta: { title: '抽取展示', keepAlive: false }
+      }
+    ]
   }
 ]
 
