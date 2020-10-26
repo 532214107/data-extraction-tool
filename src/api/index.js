@@ -10,3 +10,12 @@ export function getLabekSchema (params) {
     })
 } 
 
+// 获取数据统计数据
+export function getStatistic (params) {
+    return axios({
+        url: "/api/data_statistic/",
+        method: 'get',
+        params
+    })
+}
+

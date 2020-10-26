@@ -29,6 +29,7 @@
         </div>
         <!-- buttonBox -->
         <div class="buttonBox">
+            <el-button type="primary" @click="last">上一步</el-button>
             <el-button type="primary" @click="next">{{text}}</el-button>
         </div>
     </div>
@@ -54,7 +55,7 @@ export default {
     data(){
         return {
             active: 0, // 步骤条
-            text: "下一步"
+            text: "下一步",
         }
     },
     methods: {
@@ -66,6 +67,9 @@ export default {
             if(this.active == 4){
                 this.text = "完成"
             }
+        },
+        last(){
+            this.active >= 1 ? this.active-- : ''
         }
     }
 }

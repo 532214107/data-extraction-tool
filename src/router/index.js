@@ -16,23 +16,30 @@ const routes = [
         name: 'index',
         component: () =>
             import ('@/views/index'),
-        meta: { title: '首页', keepAlive: false }
+        meta: { title: '首页 - 数据抽取工具', keepAlive: false }
       },
       {
         path: '/alreadyExisted',
-        name: 'index',
+        name: 'alreadyExisted',
         component: () =>
             import ('@/views/alreadyExisted'),
-        meta: { title: '已有任务', keepAlive: false }
+        meta: { title: '已有任务 - 数据抽取工具', keepAlive: false }
       },
       {
         path: '/extractionShow',
-        name: 'index',
+        name: 'extractionShow',
         component: () =>
             import ('@/views/extractionShow'),
-        meta: { title: '抽取展示', keepAlive: false }
+        meta: { title: '抽取展示 - 数据抽取工具', keepAlive: false }
       }
     ]
+  },
+  {
+    path: '/showMessage',
+    name: 'showMessage',
+    component: () =>
+        import ('@/views/showMessage'),
+    meta: { title: '数据统计 - 数据抽取工具', keepAlive: false }
   }
 ]
 
