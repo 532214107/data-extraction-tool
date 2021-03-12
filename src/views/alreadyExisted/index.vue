@@ -53,8 +53,15 @@
                         </el-tag>
                         <el-tag 
                             effect="dark"
-                            type="success"
+                            type="info"
                             v-if="scope.row.task_status == '模型训练中'"
+                        >
+                            {{scope.row.task_status}}
+                        </el-tag>
+                        <el-tag 
+                            effect="dark"
+                            type="info"
+                            v-if="scope.row.task_status == '模型集成中'"
                         >
                             {{scope.row.task_status}}
                         </el-tag>
@@ -107,10 +114,10 @@ export default {
             })
         },
         download(row){
-            window.location.href = '/api/download_dataset/?task_id='+row.task_id
+            window.location.href = '/api/download_dataset/?task_id='+'row.task_id'
         },
         statistics(row){
-            getDataStatistic({task_id: row.task_id}).then(res=>{
+            getDataStatistic({task_id: '1614846955'}).then(res=>{
                 console.log(res)
             })
         },
