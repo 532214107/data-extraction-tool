@@ -22,6 +22,9 @@ export default {
         return {
             activeIndex: '/index',
         }
+    },
+    mounted(){
+        this.activeIndex = "/" + window.location.href.split('/')[4]
     }
 }
 </script>

@@ -37,10 +37,14 @@ module.exports = {
       errors: true
     },
     proxy: {
-      '/api/': {
-        target: `https://ie.demo.actkg.com/`,
+      '/api': {
+        target: `https://ie.demo.actkg.com`,
         changeOrigin: true,
-        pathRewrite: { '^/api/': 'http://210.14.118.96/' }
+        secure: false,
+        pathRewrite: { '^/api': 'https://ie.demo.actkg.com' },
+        headers: {
+          Referer: 'https://ie.demo.actkg.com'
+        }
       },
     }
   }

@@ -3,18 +3,17 @@
       <div class="leftBox">
             <el-card class="box-card">
                 <div slot="header" class="clearfix">
-                    <span>标签&上传文件</span>
+                    <span>查询&上传文件</span>
                 </div>
                 <div class="leftTop">
-                    <el-scrollbar class="tab_scroll" style="height: 100%;">
-                        <el-tag
-                            class="tag"
-                            :key="tag"
-                            v-for="tag in dynamicTags"
-                            :disable-transitions="false">
-                            {{tag}}
-                        </el-tag>
-                    </el-scrollbar>
+                        <el-row :gutter="20">
+                            <el-col :span="10">
+                                <el-input size="small" v-model="inputText" placeholder="请输入任务ID"></el-input>
+                            </el-col>
+                            <el-col :span="4">
+                                <el-button size="small" type="primary" @click="search">查询</el-button>
+                            </el-col>
+                        </el-row>
                 </div>
                 <div class="leftBottom">
                     <el-upload
@@ -23,7 +22,9 @@
                     accept=".xls,.xlsx,.csv"
                     action="/api/schema_file_upload/"
                     multiple
-                    :on-success="success">
+                    :on-success="success"
+                    ref="uploadFile"
+                    >
                         <i class="el-icon-upload"></i>
                         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
                         <div class="el-upload__tip" slot="tip">只能上传.xls/.xlsx/.csv文件</div>
@@ -35,20 +36,19 @@
             <el-card class="box-card">
                 <div slot="header" class="clearfix">
                     <span>领域类别关系</span>
-                    <el-button style="float: right; padding: 3px 0" type="text" @click="operation(null)">增加</el-button>
                 </div>
                 <div style="height: calc(100% - 60px)">
                     <el-scrollbar class="tab_scroll" style="height: 100%;">
                         <template v-show="tableList.length > 0">
                             <div v-for="(item, key) in tableList" :key="key" class="listBox">
-                                <div class="entity1">{{item.实体1}}({{item.实体1标签}})</div>    
-                                <div class="relation">{{item.关系类型}}</div>    
-                                <div class="entity2">{{item.实体2}}({{item.实体2标签}})</div>
+                                <div class="entity1">{{item.subject_type}}({{item.subject_en_abbr}})</div>    
+                                <div class="relation">{{item.predicate}}</div>    
+                                <div class="entity2">{{item.object_type}}({{item.object_en_abbr}})</div>
                                 <div class="operation" @click="operation(item, key)">操作</div>    
                             </div> 
                         </template>
                         <div v-show="tableList.length == 0" class="listBox">
-                            <div style="width: 100%">请上传文件或点击左侧标签</div>
+                            <div style="width: 100%">请上传文件或通过id检索</div>
                         </div> 
                     </el-scrollbar>
                 </div>
@@ -63,20 +63,20 @@
             :before-close="handleClose"
         >
         <el-form ref="form" :model="form" :rules='rules'>
-            <el-form-item label="实体1" prop="实体1" :label-width="formLabelWidth">
-                <el-input v-model="form.实体1" autocomplete="off"></el-input>
+            <el-form-item label="实体1" prop="object_type" :label-width="formLabelWidth">
+                <el-input v-model="form.object_type" autocomplete="off"></el-input>
             </el-form-item>
-            <el-form-item label="实体1标签" prop="实体1标签" :label-width="formLabelWidth">
-                <el-input v-model="form.实体1标签" autocomplete="off"></el-input>
+            <el-form-item label="实体1标签" prop="object_en_abbr" :label-width="formLabelWidth">
+                <el-input v-model="form.object_en_abbr" autocomplete="off"></el-input>
             </el-form-item>
-            <el-form-item label="关系类型" prop="关系类型" :label-width="formLabelWidth">
-                <el-input v-model="form.关系类型" autocomplete="off"></el-input>
+            <el-form-item label="关系类型" prop="predicate" :label-width="formLabelWidth">
+                <el-input v-model="form.predicate" autocomplete="off"></el-input>
             </el-form-item>
-            <el-form-item label="实体2" prop="实体2" :label-width="formLabelWidth">
-                <el-input v-model="form.实体2" autocomplete="off"></el-input>
+            <el-form-item label="实体2" prop="subject_type" :label-width="formLabelWidth">
+                <el-input v-model="form.subject_type" autocomplete="off"></el-input>
             </el-form-item>
-            <el-form-item label="实体2标签" prop="实体2标签" :label-width="formLabelWidth">
-                <el-input v-model="form.实体2标签" autocomplete="off"></el-input>
+            <el-form-item label="实体2标签" prop="subject_en_abbr" :label-width="formLabelWidth">
+                <el-input v-model="form.subject_en_abbr" autocomplete="off"></el-input>
             </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
@@ -88,6 +88,7 @@
 </template>
 
 <script>
+import {querySchemaByTaskId} from '@/api'
 export default {
     name: "dataPreparation",
     data(){
@@ -98,64 +99,54 @@ export default {
             tableList: [],
             dialogVisible: false,
             form: {
-                "实体1": null,
-                "实体1标签": null,
-                "关系类型": null,
-                "实体2": null,
-                "实体2标签": null,
+                "object_type": null,
+                "object_en_abbr": null,
+                "predicate": null,
+                "subject_type": null,
+                "subject_en_abbr": null
             },
             rules: {
-                实体1: [{ required: true, message: '请输入实体1', trigger: 'blur' }],
-                实体1标签: [{ required: true, message: '请输入实体1标签', trigger: 'blur' }],
-                关系类型: [{ required: true, message: '请输入关系类型', trigger: 'blur' }],
-                实体2: [{ required: true, message: '请输入实体2', trigger: 'blur' }],
-                实体2标签: [{ required: true, message: '请输入实体2标签', trigger: 'blur' }]
+                object_type: [{ required: true, message: '请输入实体1', trigger: 'blur' }],
+                object_en_abbr: [{ required: true, message: '请输入实体1标签', trigger: 'blur' }],
+                predicate: [{ required: true, message: '请输入关系类型', trigger: 'blur' }],
+                subject_type: [{ required: true, message: '请输入实体2', trigger: 'blur' }],
+                subject_en_abbr: [{ required: true, message: '请输入实体2标签', trigger: 'blur' }]
             },
             formLabelWidth: "formLabelWidth",
-            formText: '增加',
-            actionIndex: null
+            formText: '编辑',
+            actionIndex: null,
+            inputText: ""
         }
     },
     mounted(){
         
     },
     methods: {
+        init(){
+            if(this.$route.query.id){
+                this.querySchemaByTaskId(this.$route.query.id)
+            }
+        },
         //上传成功执行
         success(res){
-            let {table_body} = res
-            this.tableList.unshift(...table_body)
+            if(res.status == 'success'){
+                this.querySchemaByTaskId(res.result.task_id)
+                this.$refs.uploadFile.clearFiles()
+            }
         },
         // 数据格式化
         format(arr){
-            console.log(arr, this.actionIndex)
             let index = this.actionIndex
-            if(typeof this.actionIndex == 'number'){
-                this.tableList[index] = arr[0]
-            }else{
-                this.tableList.unshift(...arr)
-            }
+            this.tableList[index] = arr[0]
             this.actionIndex = null
         },
-        // 增加
+        /**
+         * 编辑实体item
+         */
         operation(item, key){
             this.dialogVisible = true
-            if(item){
-                this.formText = '编辑'
-                this.form.实体1 = item.实体1
-                this.form.实体2 = item.实体2
-                this.form.关系类型 = item.关系类型
-                this.form.实体1标签 = item.实体1标签
-                this.form.实体2标签 = item.实体2标签
-                this.actionIndex = key
-            }else{
-                this.formText = '增加'
-                this.form.实体1 = null
-                this.form.实体2 = null
-                this.form.关系类型 = null
-                this.form.实体1标签 = null
-                this.form.实体2标签 = null
-                this.actionIndex = null
-            }
+            this.form = item
+            this.actionIndex = key
         },
         handleClose(done){
             this.$confirm('确认关闭？')
@@ -165,7 +156,7 @@ export default {
             .catch(() => {});
         },
         // 对话框确认
-         confirm(){
+        confirm(){
             let obj = {...this.form}
             this.$refs.form.validate((valid) => {
                 if (valid) {
@@ -175,6 +166,30 @@ export default {
                     return false;
                 }
             });
+        },
+        
+        // 查询任务
+        search(){
+            if(this.inputText != ""){
+                this.querySchemaByTaskId(this.inputText)
+            }else{
+                this.$message({type: "error", message: "请输入用户ID"});
+            }
+        },
+        /**
+         * 通过task_id查询领域类别关系
+         */
+        querySchemaByTaskId(task_id){
+            querySchemaByTaskId({task_id}).then(res=>{
+                let {query: {id}} = this.$route
+                if(id != task_id){
+                    this.$router.push({query: {active: 0, id: task_id}})
+                }
+                if(res.status == 'success'){
+                    this.$emit("getTableList", res.result.schema.length, task_id)
+                    this.tableList = res.result.schema
+                }
+            })
         }
     }
 }
