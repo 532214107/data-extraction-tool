@@ -25,13 +25,6 @@ const routes = [
             import ('@/views/alreadyExisted'),
         meta: { title: '已有任务 - 数据抽取工具', keepAlive: false }
       },
-      {
-        path: '/extractionShow',
-        name: 'extractionShow',
-        component: () =>
-            import ('@/views/extractionShow'),
-        meta: { title: '抽取展示 - 数据抽取工具', keepAlive: false }
-      }
     ]
   },
   {
@@ -40,6 +33,13 @@ const routes = [
     component: () =>
         import ('@/views/showMessage'),
     meta: { title: '数据统计 - 数据抽取工具', keepAlive: false }
+  },
+  {
+    path: '/extractionShow',
+    name: 'extractionShow',
+    component: () =>
+        import ('@/views/extractionShow'),
+    meta: { title: '模型预测 - 数据抽取工具', keepAlive: false }
   }
 ]
 

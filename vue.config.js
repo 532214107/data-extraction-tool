@@ -38,12 +38,12 @@ module.exports = {
     },
     proxy: {
       '/api': {
-        target: `https://ie.demo.actkg.com`,
+        target: `https://ietool.demo.actkg.com`,
         changeOrigin: true,
         secure: false,
-        pathRewrite: { '^/api': 'https://ie.demo.actkg.com' },
+        pathRewrite: { '^/api': 'https://ietool.demo.actkg.com' },
         headers: {
-          Referer: 'https://ie.demo.actkg.com'
+          Referer: 'https://ietool.demo.actkg.com'
         }
       },
     }

@@ -126,3 +126,11 @@ export function getDataStatistic (params) {
         params
     })
 }
+
+export function Getextraction (data) {
+    return axios({
+        url: "/api/api/nlp/extraction/",
+        method: 'post',
+        data
+    })
+}
